@@ -1,0 +1,15 @@
+groups:
+- name: ServerAlerts
+  rules:
+  - alert: HostDown
+    expr: up == 0
+    for: 1m
+    labels: {severity: critical}
+    annotations:
+      description: "{{ $labels.instance }} is down"
+  - alert: HighCPU
+    expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+    for: 5m
+    labels: {severity: warning}
+    annotations:
+      description: "CPU usage above 80%"

@@ -1,0 +1,44 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: production
+    monitor: docker-monitoring
+
+rule_files:
+  - alert_rules.yml
+alerting:
+  alertmanagers:
+    - static_configs:
+      - targets: ["localhost:9093"]
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "coredns"
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+          - "192.168.0.33:9153"
+
+  - job_name: node_exporter
+    scrape_interval: 5s
+    static_configs:
+      - targets: 
+        - "192.168.0.40:9100"
+        labels:
+          server: "Grafana-Server"
+          environment: "production"
+      - targets: 
+        - "192.168.0.33:9100"
+        labels:
+          server: "DNS-Server"
+          environment: "production"
+  - job_name: cadvisor
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+          - "192.168.0.40:8080"
+          - "192.168.0.33:8080"
